@@ -3,6 +3,8 @@ import numpy as np
 import joblib
 
 model = joblib.load("satellite_launch_cost_model.pkl")
+encoders = joblib.load("encoders.pkl")
+
 
 st.title("🚀 Satellite Launch Cost Prediction")
 st.write("Estimate the cost of launching a satellite (in Million USD)")
