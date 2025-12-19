@@ -1,6 +1,10 @@
+import os
 import streamlit as st
 import numpy as np
 import joblib
+
+st.write("Current directory:", os.getcwd())
+st.write("Files in directory:", os.listdir())
 
 model = joblib.load("satellite_launch_cost_model.pkl")
 encoders = joblib.load("encoders.pkl")
