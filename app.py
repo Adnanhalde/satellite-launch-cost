@@ -170,5 +170,3 @@ if predict:
         <div class="result-sub">(${prediction_usd:.2f} Million USD)</div>
     </div>
     """, unsafe_allow_html=True)
-
-st.markdown('<div class="footer">📊 Machine Learning | Streamlit | Final Year Project</div>', unsafe_allow_html=True)
