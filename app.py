@@ -1,96 +1,157 @@
 import streamlit as st
 import numpy as np
 import joblib
+import time
 
-# -------------------------------
-# Page Config
-# -------------------------------
 st.set_page_config(
     page_title="Satellite Launch Cost Predictor",
     page_icon="🚀",
     layout="centered"
 )
 
-# -------------------------------
-# Custom CSS (Cards + Animations)
-# -------------------------------
 st.markdown("""
 <style>
-body {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+
+/* App background */
+.stApp {
+    background: radial-gradient(circle at top, #0f2027, #000000);
+    color: white;
 }
-.card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(12px);
-    padding: 25px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-    animation: fadeIn 1s ease-in-out;
+
+/* Title animation */
+.title {
+    text-align: center;
+    font-size: 46px;
+    font-weight: 800;
+    animation: fadeDown 1s ease;
 }
-.metric {
-    font-size: 32px;
-    font-weight: bold;
-    color: #00ffcc;
+
+/* Subtitle */
+.subtitle {
+    text-align: center;
+    opacity: 0.8;
+    margin-bottom: 25px;
 }
-.sub {
-    color: #dddddd;
+
+/* Main card */
+.main-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.45);
+    animation: slideUp 0.9s ease;
 }
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(15px);}
-    to {opacity: 1; transform: translateY(0);}
+
+/* Input hover */
+.stSlider > div:hover,
+.stSelectbox > div:hover {
+    transform: scale(1.01);
+    transition: 0.2s ease-in-out;
 }
+
+/* Button */
 button[kind="primary"] {
+    width: 100%;
+    border-radius: 16px;
+    font-size: 20px;
+    padding: 0.75em;
+    margin-top: 15px;
     background: linear-gradient(90deg, #00c6ff, #0072ff);
-    border-radius: 12px;
-    padding: 0.6em 1.2em;
-    font-size: 18px;
+    transition: all 0.3s ease;
 }
+
+button[kind="primary"]:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0,198,255,0.6);
+}
+
+/* Result card */
+.result-card {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: #002b1b;
+    border-radius: 22px;
+    padding: 30px;
+    text-align: center;
+    margin-top: 30px;
+    animation: popIn 0.7s ease;
+}
+
+/* Glowing amount */
+.result-amount {
+    font-size: 44px;
+    font-weight: 900;
+    animation: glow 1.5s infinite alternate;
+}
+
+.result-sub {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    opacity: 0.6;
+    font-size: 14px;
+}
+
+/* Animations */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px rgba(255,255,255,0.4); }
+    to { text-shadow: 0 0 25px rgba(255,255,255,0.9); }
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-# -------------------------------
-# Load Model
-# -------------------------------
 @st.cache_resource
 def load_model():
     return joblib.load("satellite_launch_cost_model.pkl")
 
 model = load_model()
 
-# -------------------------------
-# Header Card
-# -------------------------------
-st.markdown("""
-<div class="card">
-    <h1>🚀 Satellite Launch Cost Prediction</h1>
-    <p class="sub">Predict satellite launch cost using Machine Learning</p>
-</div>
-""", unsafe_allow_html=True)
+st.markdown('<div class="title">🚀 Satellite Launch Cost Prediction</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">AI-powered estimation of satellite launch cost</div>', unsafe_allow_html=True)
 
-# -------------------------------
-# Sidebar Inputs
-# -------------------------------
-st.sidebar.header("🛰 Mission Inputs")
+st.markdown('<div class="main-card">', unsafe_allow_html=True)
 
-payload_weight = st.sidebar.slider("Payload Weight (kg)", 100, 10000, 1200)
-mission_years = st.sidebar.slider("Mission Duration (Years)", 1, 30, 8)
+payload_weight = st.slider("Payload Weight (kg)", 100, 10000, 1000)
+mission_years = st.slider("Mission Duration (Years)", 1, 30, 10)
 
-orbit = st.sidebar.selectbox("Orbit Type", ["LEO", "MEO", "GEO"])
-rocket = st.sidebar.selectbox("Rocket Class", ["Light", "Medium", "Heavy"])
-fuel = st.sidebar.selectbox("Fuel Type", ["Solid", "Liquid", "Cryogenic"])
+orbit = st.selectbox("Orbit Type", ["LEO", "MEO", "GEO"])
+rocket = st.selectbox("Rocket Class", ["Light", "Medium", "Heavy"])
+fuel = st.selectbox("Fuel Type", ["Solid", "Liquid", "Cryogenic"])
 
-# -------------------------------
-# Encoding
-# -------------------------------
 orbit_map = {"LEO": 0, "MEO": 1, "GEO": 2}
 rocket_map = {"Light": 0, "Medium": 1, "Heavy": 2}
 fuel_map = {"Solid": 0, "Liquid": 1, "Cryogenic": 2}
 
-# -------------------------------
-# Prediction Card
-# -------------------------------
-if st.button("🚀 Predict Launch Cost", type="primary"):
+# Predict Button
+predict = st.button("🚀 Predict Launch Cost", type="primary")
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+if predict:
+    with st.spinner("Calculating launch cost..."):
+        time.sleep(1)
+
     X = np.array([[
         payload_weight,
         orbit_map[orbit],
@@ -100,21 +161,14 @@ if st.button("🚀 Predict Launch Cost", type="primary"):
     ]])
 
     prediction_usd = model.predict(X)[0]
-    inr_crore = (prediction_usd * 83) / 10
+    prediction_inr = (prediction_usd * 83) / 10
 
     st.markdown(f"""
-    <div class="card">
-        <h3>💰 Estimated Launch Cost</h3>
-        <div class="metric">₹ {inr_crore:.2f} Crores</div>
-        <p class="sub">(${prediction_usd:.2f} Million USD)</p>
+    <div class="result-card">
+        <h2>💰 Estimated Launch Cost</h2>
+        <div class="result-amount">₹ {prediction_inr:.2f} Crores</div>
+        <div class="result-sub">(${prediction_usd:.2f} Million USD)</div>
     </div>
     """, unsafe_allow_html=True)
 
-# -------------------------------
-# Footer Card
-# -------------------------------
-st.markdown("""
-<div class="card">
-    <p class="sub">📊 Machine Learning Project | Streamlit UI | Final Year</p>
-</div>
-""", unsafe_allow_html=True)
+st.markdown('<div class="footer">📊 Machine Learning | Streamlit | Final Year Project</div>', unsafe_allow_html=True)
