@@ -3,12 +3,18 @@ import numpy as np
 import joblib
 import time
 
+# ----------------------------------
+# Page Configuration
+# ----------------------------------
 st.set_page_config(
     page_title="Satellite Launch Cost Predictor",
     page_icon="🚀",
     layout="centered"
 )
 
+# ----------------------------------
+# Custom CSS (Full Animations)
+# ----------------------------------
 st.markdown("""
 <style>
 
@@ -89,14 +95,6 @@ button[kind="primary"]:hover {
     opacity: 0.9;
 }
 
-/* Footer */
-.footer {
-    text-align: center;
-    margin-top: 30px;
-    opacity: 0.6;
-    font-size: 14px;
-}
-
 /* Animations */
 @keyframes slideUp {
     from { opacity: 0; transform: translateY(30px); }
@@ -121,15 +119,30 @@ button[kind="primary"]:hover {
 </style>
 """, unsafe_allow_html=True)
 
+# ----------------------------------
+# Load Model
+# ----------------------------------
 @st.cache_resource
 def load_model():
     return joblib.load("satellite_launch_cost_model.pkl")
 
 model = load_model()
 
-st.markdown('<div class="title">🚀 Satellite Launch Cost Prediction</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">AI-powered estimation of satellite launch cost</div>', unsafe_allow_html=True)
+# ----------------------------------
+# Title
+# ----------------------------------
+st.markdown(
+    '<div class="title">🚀 Satellite Launch Cost Prediction</div>',
+    unsafe_allow_html=True
+)
+st.markdown(
+    '<div class="subtitle">AI-powered estimation of satellite launch cost</div>',
+    unsafe_allow_html=True
+)
 
+# ----------------------------------
+# Main Card (Inputs)
+# ----------------------------------
 st.markdown('<div class="main-card">', unsafe_allow_html=True)
 
 payload_weight = st.slider("Payload Weight (kg)", 100, 10000, 1000)
@@ -139,6 +152,7 @@ orbit = st.selectbox("Orbit Type", ["LEO", "MEO", "GEO"])
 rocket = st.selectbox("Rocket Class", ["Light", "Medium", "Heavy"])
 fuel = st.selectbox("Fuel Type", ["Solid", "Liquid", "Cryogenic"])
 
+# Encoding
 orbit_map = {"LEO": 0, "MEO": 1, "GEO": 2}
 rocket_map = {"Light": 0, "Medium": 1, "Heavy": 2}
 fuel_map = {"Solid": 0, "Liquid": 1, "Cryogenic": 2}
@@ -148,6 +162,9 @@ predict = st.button("🚀 Predict Launch Cost", type="primary")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
+# ----------------------------------
+# Prediction Result
+# ----------------------------------
 if predict:
     with st.spinner("Calculating launch cost..."):
         time.sleep(1)
