@@ -101,7 +101,12 @@ st.markdown('<div class="title">🚀 Satellite Launch Cost Prediction</div>', un
 # ----------------------------------
 # Input Card
 # ----------------------------------
-st.markdown('<div class="main-card">', unsafe_allow_html=True)
+st.markdown("""
+<div class="main-card">
+<h3 style="text-align:center; margin-bottom:25px;">
+🛰️ Mission Parameters
+</h3>
+""", unsafe_allow_html=True)
 
 payload_weight = st.slider("Payload Weight (kg)", 100, 10000, 1000)
 mission_years = st.slider("Mission Duration (Years)", 1, 30, 10)
