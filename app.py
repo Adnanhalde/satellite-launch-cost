@@ -98,7 +98,7 @@ model = load_model()
 # Title
 # ----------------------------------
 st.markdown('<div class="title">🚀 Satellite Launch Cost Prediction</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">AI-powered estimation of satellite launch cost</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle"> Estimation of satellite launch cost</div>', unsafe_allow_html=True)
 
 # ----------------------------------
 # Input Card
